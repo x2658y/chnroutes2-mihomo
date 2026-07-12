@@ -1,0 +1,24 @@
+name: Sync
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      source_url:
+        description: '源文件 URL'
+        required: true
+        default: 'https://raw.githubusercontent.com/misakaio/chnroutes2/refs/heads/master/chnroutes.txt'
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          URL="${{ github.event.inputs.source_url || 'https://raw.githubusercontent.com/misakaio/chnroutes2/refs/heads/master/chnroutes.txt' }}"
+          curl -sL "$URL" | sed '/^#/d; /^$/d; s/^/  - /' | sed '1i payload:' > chnroutes2.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add chnroutes2.yaml
+          git commit -m "Update chnroutes2.yaml" && git push
