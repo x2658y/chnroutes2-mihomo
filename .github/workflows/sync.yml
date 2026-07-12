@@ -21,4 +21,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add chnroutes2.txt
-          git commit -m "Update chnroutes2.txt" && git push
+          git diff --cached --quiet || (git commit -m "Update chnroutes2.txt" && git push)
